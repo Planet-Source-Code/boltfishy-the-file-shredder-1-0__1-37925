@@ -1,0 +1,157 @@
+<html>
+
+<head>
+<meta name="GENERATOR" content="Microsoft FrontPage 5.0">
+<meta name="ProgId" content="FrontPage.Editor.Document">
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<title>Help</title>
+</head>
+
+<body>
+
+<p><font face="Courier New" size="2" color="#008000">' App Name : The File 
+Shredder<br>
+' App Version : 2.0<br>
+' Purpose : Securely delete files<br>
+' Parameters : None<br>
+' Written by : Mischa Balen<br>
+' Date Created : July / August 2002<br>
+'----------------------------------------------------------<br>
+<br>
+'Last Updated: 13th August 2002 by Mischa<br>
+<br>
+'----------------------------------------------------------<br>
+'How the hell this code works: README FIRST<br>
+'----------------------------------------------------------<br>
+<br>
+'----------------------------------------------------------<br>
+' 1. GLOBAL VARIABLES<br>
+'----------------------------------------------------------<br>
+<br>
+'OK, so firstly lets deal with the global variables,<br>
+'which are:<br>
+<br>
+' ---------------<br>
+'| NumberOfTimes |<br>
+'| EncMethod |<br>
+'| HexCorrupt |<br>
+'| FileTemp |<br>
+' ---------------<br>
+<br>
+'1. NumberOfTimes =<br>
+'This is a global variable which the user can set from<br>
+'frmOptions.frm. It stores the data telling us how many<br>
+'times we should overwrite the file. Upon startup, its<br>
+'value is automatically 1000. If the user changes it,<br>
+'then it is updated and called by the ShredFile function.<br>
+'The maximum value is 999,999,999.<br>
+<br>
+'2. EncMethod =<br>
+'OK, another variable the user can set, but this time from<br>
+'frmOptions2.frm. It stores the data telling us what type<br>
+'of encryption we should use. The options are:<br>
+'-BlowFish, -RC4, -DES, -All, -None<br>
+'A simple check is performed at the very start of the<br>
+'ShredFile routine and the file is encrypted according to<br>
+'the value of EncMethod.<br>
+<br>
+'5. HexCorrupt =<br>
+<br>
+'The user can also specify whether or not to corrupt the<br>
+'file(s) by writing completely random hex values to them.<br>
+'It is therefore a Boolean and is called by the ShredFile<br>
+'Routine.<br>
+<br>
+'4. FileTemp =<br>
+'When the user clicks 'delete file' it goes into a loop<br>
+'until all the files have been removed by the ShredFile<br>
+'routine. Before the file is deleted, its path is written<br>
+'to FileTemp. Then, we use the GetFileName sub to return<br>
+'the file name. This is so we can add the file name to<br>
+'the status bar panel even if it has just been deleted.<br>
+<br>
+'----------------------------------------------------------<br>
+' 2. FUNCTIONS<br>
+'----------------------------------------------------------<br>
+<br>
+'Now that we have got those sorted out, let's take a look<br>
+'at what happens when the use clicks the delete button.<br>
+'Here is the basic model process for the whole app:<br>
+<br>
+'Delete Clicked -&gt; File Name Read -&gt; File Encrypted -&gt;<br>
+'File OverWritten -&gt; File Replaced with &quot;&quot; -&gt; File Deleted<br>
+<br>
+' DELETE CLICKED - We declare the following:<br>
+' ------------------------------------------<br>
+<br>
+' ------------------------<br>
+'| Dim i As Integer |<br>
+'| Dim b As Integer |<br>
+'| Dim File2Del As String |<br>
+'| Dim msg As String |<br>
+' ------------------------<br>
+<br>
+'1. I / B = Counter. B is labelled as the number of files<br>
+'in the listbox - i.e. the number of files to be deleted.<br>
+'I can be thought of as the current file (which is being<br>
+'deleted).<br>
+<br>
+'Using I, we progress in steps of 1.<br>
+<br>
+'In every stage, we:<br>
+'<br>
+' 1)Set the display panel to &quot;Deleting&quot; i &quot;of&quot; b<br>
+' 2)Set the other panel to the file name of the current<br>
+' file which is being deleted<br>
+' 3)Use ShredFile Function<br>
+<br>
+'This loop runs until I = B, i.e. when the current file<br>
+'being deleted = the total number of files. Therefore we<br>
+'must have finished, so we take appropriate action.<br>
+<br>
+<br>
+' SHRED FILE FUNCTION - This is explained:<br>
+' -----------------------------------------<br>
+<br>
+'This is the primary and most important feature in the<br>
+'programme. It makes the file safe before finally deleting<br>
+'it. Again, look at the model below:<br>
+<br>
+' 1. Checks to see what encryption to use by looking at<br>
+' the value of EncMethod<br>
+' 2. Calls encryption routine<br>
+' 3. Generates random characters<br>
+' 4. Overwrites data with random characters<br>
+' 5. Does this until NumberOfTimes is satisfied<br>
+' 6. Checks to see if we should HexCorrupt the file<br>
+' 7. Corrupts if HexCorrupt = True<br>
+' 8. Overwrites all the characters with &quot;&quot;<br>
+' 9. Deletes the file<br>
+<br>
+'In order to generate the random data, we generate a random<br>
+'number - Rnd(10*10).<br>
+'Then we convert this to a character data.<br>
+<br>
+'Once this has been done, the file is opened for binary<br>
+'and we replace every character in it with the random<br>
+'character data we just generated.<br>
+'This process goes on until NumberOfTimes has been<br>
+'satisfied.<br>
+'We must flush the file buffers. If windoze sees that<br>
+'we are going to delete the file anyway it won't<br>
+'bother to overwrite it etc, so we use this API call<br>
+'in order to clear its &quot;memory&quot;.<br>
+<br>
+'If the user wants to hex corrupt the file (we look at<br>
+'the value of HexCorrupt), then we do so at this point.<br>
+<br>
+'Finally, we remove all the data in the file and replace it<br>
+'with &quot;&quot;.<br>
+<br>
+'The file is now deleted.<br>
+<br>
+&nbsp;</font></p>
+
+</body>
+
+</html>
